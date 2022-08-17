@@ -1,0 +1,41 @@
+.logom-container{
+    /* background-color: chocolate; */
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    padding-top: 50px;
+}
+.form{
+    display: flex;
+    align-items: center;
+    justify-items: center;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+     
+}
+.button_logim{
+    width: 100%;
+    height: 25px;
+    background-color: rgb(245, 75, 75);
+    border: 0;
+    border-radius: 5px;
+    color: white;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font: 700;
+    /* display: inline-block; */
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    transition: filter 0.2s;
+}
+.button_logim:hover{
+ filter: brightness(90%);
+}
+form a{
+    text-decoration: none;
+}
