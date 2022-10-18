@@ -17,6 +17,7 @@ import Editarsetor from "./pages/Editarsetor";
 import Cadastrodesetor from "./pages/cadastrodesetor";
 import Listalotação from "./pages/Listalotação";
 import Cadastrodelotação from "./pages/cadastrodelotação";
+import Editarlotacao from "./pages/Editarlotacao";
 export default function Routes(){
     return(
         <BrowserRouter>
@@ -37,6 +38,7 @@ export default function Routes(){
                 <Route path={"/editarsetor/:id"} component={Editarsetor}/>
                 <Route path={"/listalotacao"} component={Listalotação}/>
                 <Route path={"/cadastrodelotacao"} component={Cadastrodelotação}/>
+                <Route path={"/editarlotacao/:id"} component={Editarlotacao}/>
             </Switch>
         </BrowserRouter>
     )

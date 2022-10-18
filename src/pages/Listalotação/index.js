@@ -7,7 +7,7 @@ import '../../global.css';
 import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import  'react-confirm-alert/src/react-confirm-alert.css' ;
-
+import api from "../../server/api";
 
 export default function Listaempresa(){
     const [lotacao,setLotacao] = useState([]);
@@ -20,19 +20,41 @@ export default function Listaempresa(){
         mostrarlista();
     },[])
     function Editar(i){
-        // window.location.href=`/editarempresa/${i}`
+        window.location.href=`/editarlotacao/${i}`
+    }
+    function dataFormatada(d){
+        var data = new Date(d),
+            dia = data.getDate().toString(),
+            diaF = (dia.length==1) ? '0' + dia : dia,
+            mes = (data.getMonth()+1).toString(),
+            mesF = (mes.length == 1) ? '0'+mes : mes,
+            anoF = data.getFullYear();
+            return diaF+"/"+mesF+"/"+anoF;
+
     }
     function mostrarlista(){
-        let cadastros = JSON.parse(localStorage.getItem("cd-lotacao") || "[]")
-        setLotacao(cadastros)
-        let ListaUsuarios=JSON.parse(localStorage.getItem("cd-usuarios")||"[]");
-        setUsuario(ListaUsuarios);
-        let listaEmpresa=JSON.parse(localStorage.getItem("cd-empresas")||"[]");
-        setEmpresa(listaEmpresa);
-        let listaSetor=JSON.parse(localStorage.getItem("cd-setor")||"[]");
-        setSetor(listaSetor);
-        let listaPatrimonio=JSON.parse(localStorage.getItem("cd-patrimonio")||"[]");
-        setPatrimonio(listaPatrimonio);
+        api.get('/lotacao')
+        .then(res => {
+            if(res.status==200){
+                setDados(res.data.lotacao);
+                console.log("status "+res.status);
+                console.log(res.data.usuario); 
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        });
+        console.log(dados)
+        // let cadastros = JSON.parse(localStorage.getItem("cd-lotacao") || "[]")
+        // setLotacao(cadastros)
+        // let ListaUsuarios=JSON.parse(localStorage.getItem("cd-usuarios")||"[]");
+        // setUsuario(ListaUsuarios);
+        // let listaEmpresa=JSON.parse(localStorage.getItem("cd-empresas")||"[]");
+        // setEmpresa(listaEmpresa);
+        // let listaSetor=JSON.parse(localStorage.getItem("cd-setor")||"[]");
+        // setSetor(listaSetor);
+        // let listaPatrimonio=JSON.parse(localStorage.getItem("cd-patrimonio")||"[]");
+        // setPatrimonio(listaPatrimonio);
         //console.log("passou aqui")
        // console.log("cd-lotacao")
         
@@ -40,15 +62,19 @@ export default function Listaempresa(){
     function excluir(i,nome){
         confirmAlert ( { 
             title : 'Excluir empresa' , 
-            message : `Deseja realmente excluir a empresa ${nome}` , 
+            message : `Deseja realmente excluir a lotação ${nome}` , 
             buttons : [ 
               { 
                 label : 'Sim' , 
                 onClick : ( )  => {
-                    let dadosnovos = []
-                    dadosnovos=lotacao.filter(item => item.id!==i)
-                    setDados(dadosnovos)
-                    localStorage.setItem('cd-lotacao',JSON.stringify(dadosnovos))
+                    // let dadosnovos = []
+                    // dadosnovos=lotacao.filter(item => item.id!==i)
+                    // setDados(dadosnovos)
+                    // localStorage.setItem('cd-lotacao',JSON.stringify(dadosnovos))
+                    api.delete(`/lotacao/${i}`)
+                    .then(res=>{});
+                    alert("dados deletados com sucesso");
+                    mostrarlista();
                 }
               } , 
               { 
@@ -59,25 +85,25 @@ export default function Listaempresa(){
           } ) ; 
     }
     
-    function filtrarnome(id,numero){
-        let dadosnovos=[];
-        switch(numero){
-            case 1:
-                dadosnovos=empresa.filter(value=> value.id==id);
-            break;
-            case 2:
-                dadosnovos=patrimonio.filter(value=> value.id==id);
-            break;
-            case 3:
-                dadosnovos=setor.filter(value=> value.id==id);
-            break;
-            case 4:
-                dadosnovos=usuario.filter(value=> value.id==id);
-            break;
-        }
-        return dadosnovos[0].nome
-        //console.log(dadosnovos[0].nome)
-    }
+    // function filtrarnome(id,numero){
+    //     let dadosnovos=[];
+    //     switch(numero){
+    //         case 1:
+    //             dadosnovos=empresa.filter(value=> value.id==id);
+    //         break;
+    //         case 2:
+    //             dadosnovos=patrimonio.filter(value=> value.id==id);
+    //         break;
+    //         case 3:
+    //             dadosnovos=setor.filter(value=> value.id==id);
+    //         break;
+    //         case 4:
+    //             dadosnovos=usuario.filter(value=> value.id==id);
+    //         break;
+    //     }
+    //     return dadosnovos[0].nome
+    //     //console.log(dadosnovos[0].nome)
+    // }
     function limpardados(){
         localStorage.removeItem("cd-lotacao")
         alert("Dados deletados")
@@ -100,7 +126,7 @@ export default function Listaempresa(){
                     </a>
                 </div>
                 {/* <p>Lista de usúarios</p> */}
-                { lotacao.length>0 ?
+                { dados.length>0 ?
                 <table border={1} border-color="black">
                 <tr>
                     <th>Id</th>
@@ -108,23 +134,24 @@ export default function Listaempresa(){
                     <th>Patrimonio</th>
                     <th>Setor</th>
                     <th>Empresa</th>
-                    <th>Data movimentação</th>
+                    <th>Criado Em</th>
                     {/* <th></th> */}
                     {/* <th></th> */}
                 </tr>
                     {
-                    lotacao.map((lot)=>{
+                    dados.map((lot)=>{
                     return(
-                        <tr key={lot.toString}>
-                            <td>{lot.id}</td>
-                            <td>{filtrarnome(lot.idusuario,4)}</td>
-                            <td>{filtrarnome(lot.idpatrimonio,2)}</td>
-                            <td>{filtrarnome(lot.idsetor,3)}</td>
-                            <td>{filtrarnome(lot.idempresa,1)}</td>
-                            <td>{lot.datamovimentacao}</td>
-                            {/* <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(lot.id)}/></td> */}
-                            {/* <td><FiDelete color="red" size={18} onClick={(e)=>excluir(lot.id)} cursor="pointer" 
-                            /></td> */}
+                        // key={lot.codlot}
+                        <tr>
+                            <td>{lot.codlot}</td>
+                            <td>{lot.usuario}</td>
+                            <td>{lot.patrimonio}</td>
+                            <td>{lot.setor}</td>
+                            <td>{lot.empresas}</td>
+                            <td>{dataFormatada(lot.createAt)}</td>
+                            <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(lot.codlot)}/></td>
+                            <td><FiDelete color="red" size={18} onClick={(e)=>excluir(lot.codlot,lot.codlot)} cursor="pointer" 
+                            /></td>
                             
                         </tr>
                         )
@@ -135,7 +162,7 @@ export default function Listaempresa(){
                 <table border={1} border-color="black">
                 <tr>
                     <th>Id</th>
-                    <th>Usuario eeee</th>
+                    <th>Usuario</th>
                     <th>Patrimonio</th>
                     <th>Setor</th>
                     <th>Empresa</th>

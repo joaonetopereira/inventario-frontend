@@ -7,6 +7,7 @@ import '../../global.css';
 import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import  'react-confirm-alert/src/react-confirm-alert.css' ;
+import api from "../../server/api";
 
 
 export default function Listaempresa(){
@@ -18,8 +19,19 @@ export default function Listaempresa(){
         window.location.href=`/editarempresa/${i}`
     }
     function mostrarlista(){
-        let cadastros = JSON.parse(localStorage.getItem("cd-empresas") || "[]")
-        setDados(cadastros)
+        // let cadastros = JSON.parse(localStorage.getItem("cd-empresas") || "[]")
+        // setDados(cadastros)
+        api.get('/empresas')
+        .then(res => {
+            if(res.status==200){
+                setDados(res.data.empresas);
+                console.log("status "+res.status);
+                console.log(res.data.usuario); 
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        });
         
     }
     function excluir(i,nome){
@@ -30,10 +42,14 @@ export default function Listaempresa(){
               { 
                 label : 'Sim' , 
                 onClick : ( )  => {
-                    let dadosnovos = []
-                    dadosnovos=dados.filter(item => item.id!==i)
-                    setDados(dadosnovos)
-                    localStorage.setItem('cd-empresas',JSON.stringify(dadosnovos))
+                    // let dadosnovos = []
+                    // dadosnovos=dados.filter(item => item.id!==i)
+                    // setDados(dadosnovos)
+                    // localStorage.setItem('cd-empresas',JSON.stringify(dadosnovos))
+                    api.delete(`/empresas/${i}`)
+                    .then(res=>{});
+                    alert("dados deletados com sucesso");
+                    mostrarlista();
                 }
               } , 
               { 
@@ -74,13 +90,13 @@ export default function Listaempresa(){
                     {
                     dados.map(usu=>{
                     return(
-                        <tr key={usu.id}>
-                            <td>{usu.id}</td>
+                        <tr key={usu.codemp}>
+                            <td>{usu.codemp}</td>
                             <td>{usu.nome}</td>
                             <td>{usu.responsavel}</td>
                             <td>{usu.contato}</td>
-                            <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.id)}/></td>
-                            <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.id,usu.nomeusuario)}
+                            <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.codemp)}/></td>
+                            <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.codemp,usu.nome)}
                             cursor="pointer" 
                             /></td>
                         </tr>

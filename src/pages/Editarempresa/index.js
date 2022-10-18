@@ -8,7 +8,7 @@ import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useParams } from "react-router-dom";
-
+import api from "../../server/api";
 
 export default function EditarUsuario() {
     const {id}= useParams()
@@ -17,20 +17,44 @@ export default function EditarUsuario() {
     const [contato, setContato] = useState('')
     const [msg, setMsg] = useState('')
     const [valida, setValida] = useState(true)
-    
+    const dados = {
+        id,
+        nome,
+        responsavel,
+        contato    
+    }
     useEffect(()=>{
         mostrardados();
     },[])
     function mostrardados(){
-        let listaempresa = JSON.parse(localStorage.getItem("cd-empresas") || "[]")
-         listaempresa.
-            filter(value => value.id == id).
-            map(value => {
-                setNome(value.nome)
-                setResponsavel(value.responsavel)
-                setContato(value.contato)
+        // let listaempresa = JSON.parse(localStorage.getItem("cd-empresas") || "[]")
+        //  listaempresa.
+        //     filter(value => value.id == id).
+        //     map(value => {
+        //         setNome(value.nome)
+        //         setResponsavel(value.responsavel)
+        //         setContato(value.contato)
                 
-            })
+        //     })
+        api.get(`/empresas/${id}`)
+        .then(res => {
+            if(res.status==200){
+                let resultado=res.data.empresas;
+                // setDados(res.data.usuario);
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
+                setNome(resultado[0].nome);
+                setResponsavel(resultado[0].responsavel);
+                setContato(resultado[0].contato);
+                // setConfSenha(resultado[0].senha);
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        })
+        .catch(function (error){
+            console.log(error);
+        });
     }
     // function validasenha() {
     //     if (senha !== "") {
@@ -46,8 +70,8 @@ export default function EditarUsuario() {
     //         setMsg("Campo senha está vazio")
     //     }
     // }
-    function salvardados() {
-        //e.preventDefault();
+    function salvardados(e) {
+        e.preventDefault();
         
             let index = 0
             if (nome.length <= 3) {
@@ -62,18 +86,13 @@ export default function EditarUsuario() {
                 index++
             }
             if (index === 0) {
-                let listaempresa = JSON.parse(localStorage.getItem("cd-empresas") || "[]")
-                listaempresa.map((item)=>{
-                    if(item.id==id){
-                        item.nome=nome;
-                        item.responsavel=responsavel;
-                        item.contato=contato;
-                    }
-                })
-                localStorage.setItem("cd-empresas",JSON.stringify(listaempresa))
-                window.location.href="/listaempresa";
-                alert("Dados salvos com sucesso");
-            
+                api.patch("empresas",
+                dados,
+                {headers:{'Content-Type':'application/json'}}    
+            ).then(function (response){
+                alert("Cadastro salvo com sucesso!!!");
+                window.location.href="/listaempresa"
+            });
         }
     }
     return (

@@ -8,20 +8,24 @@ import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useParams } from "react-router-dom";
+import api from "../../server/api";
+import { useHistory } from "react-router-dom";
 
 
 export default function CadastrodeUsuario() {
+    const navigate = useHistory();
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [Confsenha, setConfSenha] = useState('')
     const [msg, setMsg] = useState('')
-    const [valida, setValida] = useState(true)
-    let dados = [
-        {
-            
-        }
-    ]
+    const [valida, setValida] = useState(false)
+    const dados = {
+        nome,
+        email,
+        senha    
+    }
+    
     function validasenha() {
         if (senha !== "") {
             if (senha !== Confsenha) {
@@ -37,7 +41,7 @@ export default function CadastrodeUsuario() {
         }
     }
     function salvardados(e) {
-        e.preventDefault();
+        // e.preventDefault();
         validasenha()
         if (valida === false) {
             setMsg("Senhas não conferem")
@@ -50,20 +54,34 @@ export default function CadastrodeUsuario() {
                 setMsg("Campo email está vazio")
                 index++
             }
-            if (index === 0) { 
-                let listaUser = JSON.parse(localStorage.getItem("cd-usuarios")||"[]") 
+            if (index === 0) {
+                api.post("usuario",
+                    dados,
+                    {headers:{'Content-Type':'application/json'}}    
+                ).then(function (response){
+                    alert("Cadastro salvo com sucesso!!!");
+                    window.location.href="/listausuarios"
+                });
+                // try{
+                //    const response=await api.post('/usuario',dados);
+                //     alert(`Seu ID de acesso: ${response.data.usuario}`)
+                //     window.location.href="/listausuario";
+                // }catch(err){
+                //     alert('Erro no cadastro, tente novamente.');
+                // }
+                // let listaUser = JSON.parse(localStorage.getItem("cd-usuarios")||"[]") 
 
-                listaUser.push(
-                    {
-                        id: Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
-                        nome: nome,
-                        email: email,
-                        senha: senha
-                    }
-                )
-                localStorage.setItem("cd-usuarios",JSON.stringify(listaUser));
-                alert("Cadastro salvo com sucesso!!!!");
-                Window.location.href="/listausuario";
+                // listaUser.push(
+                //     {
+                //         id: Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
+                //         nome: nome,
+                //         email: email,
+                //         senha: senha
+                //     }
+                // )
+                // localStorage.setItem("cd-usuarios",JSON.stringify(listaUser));
+                // alert("Cadastro salvo com sucesso!!!!");
+                
             }
         }
     }
@@ -102,9 +120,10 @@ export default function CadastrodeUsuario() {
                             onChange={e => setConfSenha(e.target.value)}
                         />
                         <p>{msg}</p>
-                        <button className="button_save" type="submit">
+                            <button className="button_save" type="submit">
                             Cadastrar-se
                         </button>
+                        
                         {/* <a href="#">Cadastra nova Empresa</a> */}
                     </form>
 

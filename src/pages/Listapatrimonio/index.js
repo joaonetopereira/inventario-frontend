@@ -7,7 +7,7 @@ import '../../global.css';
 import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import  'react-confirm-alert/src/react-confirm-alert.css' ;
-
+import api from "../../server/api";
 
 export default function Listausuarios(){
     const [dados,setDados] = useState([]);
@@ -18,8 +18,19 @@ export default function Listausuarios(){
         window.location.href=`editarpatrimonio/${i}`
     }
     function mostrarlista(){
-        let cadastros = JSON.parse(localStorage.getItem("cd-patrimonio")||"[]")
-        setDados(cadastros)
+        // let cadastros = JSON.parse(localStorage.getItem("cd-patrimonio")||"[]")
+        // setDados(cadastros)
+        api.get('/patrimonio')
+        .then(res => {
+            if(res.status==200){
+                setDados(res.data.patrimonio);
+                console.log("status "+res.status);
+                console.log(res.data.patrimonio); 
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        });
         
     }
     function excluir(i,nome){
@@ -30,10 +41,14 @@ export default function Listausuarios(){
               { 
                 label : 'Sim' , 
                 onClick : ( )  => {
-                    let dadosnovos = []
-                    dadosnovos=dados.filter(item => item.id!==i)
-                    setDados(dadosnovos)
-                    localStorage.setItem('cd-patrimonio',JSON.stringify(dadosnovos))
+                    // let dadosnovos = []
+                    // dadosnovos=dados.filter(item => item.id!==i)
+                    // setDados(dadosnovos)
+                    // localStorage.setItem('cd-patrimonio',JSON.stringify(dadosnovos))
+                    api.delete(`/patrimonio/${i}`)
+                    .then(res=>{});
+                    alert("dados deletados com sucesso");
+                    mostrarlista();
                 }
               } , 
               { 
@@ -71,11 +86,11 @@ export default function Listausuarios(){
                         {
                         dados.map(usu=>{
                         return(
-                            <tr key={usu.id}>
-                                <td>{usu.id}</td>
+                            <tr key={usu.codpat}>
+                                <td>{usu.codpat}</td>
                                 <td>{usu.nome}</td>
-                                <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.id)}/></td>
-                                <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.id,usu.nomeusuario)}
+                                <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.codpat)}/></td>
+                                <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.codpat,usu.nome)}
                                 cursor="pointer" 
                                 /></td>
                             </tr>

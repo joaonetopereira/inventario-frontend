@@ -7,20 +7,30 @@ import '../../global.css';
 import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import  'react-confirm-alert/src/react-confirm-alert.css' ;
-
+import api from "../../server/api";
 
 export default function Listausuarios(){
     const [dados,setDados] = useState([]);
     useEffect(()=>{
         mostrarlista();
-    },[dados])
+    },[])
     function Editar(i){
         window.location.href=`/editarsetor/${i}`
     }
     function mostrarlista(){
-        let cadastros = JSON.parse(localStorage.getItem("cd-setor")||"[]")
-        setDados(cadastros)
-        
+        // let cadastros = JSON.parse(localStorage.getItem("cd-setor")||"[]")
+        // setDados(cadastros)
+        api.get('/setor')
+        .then(res => {
+            if(res.status==200){
+                setDados(res.data.setor);
+                console.log("status "+res.status);
+                console.log(res.data.setor); 
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        });
     }
     function excluir(i,nome){
         confirmAlert ( { 
@@ -30,10 +40,15 @@ export default function Listausuarios(){
               { 
                 label : 'Sim' , 
                 onClick : ( )  => {
-                    let dadosnovos = []
-                    dadosnovos=dados.filter(item => item.id!==i)
-                    setDados(dadosnovos)
-                    localStorage.setItem('cd-setor',JSON.stringify(dadosnovos))
+                    // let dadosnovos = []
+                    // dadosnovos=dados.filter(item => item.id!==i)
+                    // setDados(dadosnovos)
+                    // localStorage.setItem('cd-setor',JSON.stringify(dadosnovos))
+                    api.delete(`/setor/${i}`)
+                    .then(res=>{});
+                    alert("dados deletados com sucesso");
+                    mostrarlista();
+                
                 }
               } , 
               { 
@@ -71,11 +86,11 @@ export default function Listausuarios(){
                         {
                         dados.map(usu=>{
                         return(
-                            <tr key={usu.id}>
-                                <td>{usu.id}</td>
+                            <tr key={usu.codset}>
+                                <td>{usu.codset}</td>
                                 <td>{usu.nome}</td>   
-                                <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.id)}/></td>
-                                <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.id,usu.nomeusuario)}
+                                <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.codset)}/></td>
+                                <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.codset,usu.nome)}
                                 cursor="pointer" 
                                 /></td>
                             </tr>

@@ -8,7 +8,7 @@ import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useParams } from "react-router-dom";
-
+import api from "../../server/api";
 
 export default function EditarUsuario() {
     const {id}= useParams()
@@ -18,20 +18,42 @@ export default function EditarUsuario() {
     // const [Confsenha, setConfSenha] = useState('')
     const [msg, setMsg] = useState('')
     const [valida, setValida] = useState(true)
-    
+    const dados = {
+        id,
+        nome    
+    }
     useEffect(()=>{
         mostrardados();
     },[])
     function mostrardados(){
-        let listaUser = JSON.parse(localStorage.getItem("cd-setor"))
-         listaUser.
-            filter(value => value.id == id).
-            map(value => {
-                setNome(value.nome)
-                // setEmail(value.email)
-                // setSenha(value.senha)
-                // setConfSenha(value.senha)
-            })
+        // let listaUser = JSON.parse(localStorage.getItem("cd-setor"))
+        //  listaUser.
+        //     filter(value => value.id == id).
+        //     map(value => {
+        //         setNome(value.nome)
+        //         // setEmail(value.email)
+        //         // setSenha(value.senha)
+        //         // setConfSenha(value.senha)
+        //     })
+        api.get(`/setor/${id}`)
+        .then(res => {
+            if(res.status==200){
+                let resultado=res.data.setor;
+                // setDados(res.data.usuario);
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
+                setNome(resultado[0].nome);
+                // setEmail(resultado[0].email);
+                // setSenha(resultado[0].senha);
+                // setConfSenha(resultado[0].senha);
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        })
+        .catch(function (error){
+            console.log(error);
+        });
     }
     // function validasenha() {
     //     if (senha !== "") {
@@ -47,8 +69,8 @@ export default function EditarUsuario() {
     //         setMsg("Campo senha está vazio")
     //     }
     // }
-    function salvardados() {
-        //e.preventDefault();
+    function salvardados(e) {
+        e.preventDefault();
         //validasenha()
         
             let index = 0
@@ -57,15 +79,22 @@ export default function EditarUsuario() {
                 index++
             } else 
             if (index === 0) {
-                let listaUser = JSON.parse(localStorage.getItem("cd-setor"))
-                listaUser.map((item)=>{
-                    if(item.id==id){
-                        item.nome=nome;
-                    }
-                })
-                localStorage.setItem("cd-setor",JSON.stringify(listaUser))
-                window.location.href="/listasetor";
-                alert("Dados salvos com sucesso");
+                // let listaUser = JSON.parse(localStorage.getItem("cd-setor"))
+                // listaUser.map((item)=>{
+                //     if(item.id==id){
+                //         item.nome=nome;
+                //     }
+                // })
+                // localStorage.setItem("cd-setor",JSON.stringify(listaUser))
+                // window.location.href="/listasetor";
+                // alert("Dados salvos com sucesso");
+                api.patch("setor",
+                    dados,
+                    {headers:{'Content-Type':'application/json'}}    
+                ).then(function (response){
+                    alert("Cadastro salvo com sucesso!!!");
+                    window.location.href="/listasetor"
+                });
             }
         
     }

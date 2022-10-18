@@ -8,7 +8,7 @@ import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useParams } from "react-router-dom";
-
+import api from "../../server/api";
 
 export default function CadastrodeUsuario() {
     const [nome, setNome] = useState('')
@@ -17,11 +17,9 @@ export default function CadastrodeUsuario() {
     //const [Confsenha, setConfSenha] = useState('')
     const [msg, setMsg] = useState('')
     //const [valida, setValida] = useState(true)
-    let dados = [
-        {
-            
-        }
-    ]
+    const dados = {
+        nome 
+    }
     // function validasenha() {
     //     if (senha !== "") {
     //         if (senha !== Confsenha) {
@@ -48,18 +46,25 @@ export default function CadastrodeUsuario() {
             //     setMsg("Campo email está vazio")
             //     index++
             // }
-            else if (index === 0) { 
-                let listaUser = JSON.parse(localStorage.getItem("cd-patrimonio")||"[]") 
+            else if (index === 0) {
+                api.post("patrimonio",
+                    dados,
+                    {headers:{'Content-Type':'application/json'}}    
+                ).then(function (response){
+                    alert("Cadastro salvo com sucesso!!!");
+                    window.location.href="/listapatrimonio"
+                }); 
+                // let listaUser = JSON.parse(localStorage.getItem("cd-patrimonio")||"[]") 
 
-                listaUser.push(
-                    {
-                        id: Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
-                        nome: nome,                       
-                    }
-                )
-                localStorage.setItem("cd-patrimonio",JSON.stringify(listaUser));
-                alert("Cadastro salvo com sucesso!!!!");
-                Window.location.href="/listapatrimonio";
+                // listaUser.push(
+                //     {
+                //         id: Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
+                //         nome: nome,                       
+                //     }
+                // )
+                // localStorage.setItem("cd-patrimonio",JSON.stringify(listaUser));
+                // alert("Cadastro salvo com sucesso!!!!");
+                // Window.location.href="/listapatrimonio";
             }
         
     }

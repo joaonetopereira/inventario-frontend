@@ -7,20 +7,37 @@ import '../../global.css';
 import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import  'react-confirm-alert/src/react-confirm-alert.css' ;
-
+import api from "../../server/api";
 
 export default function Listausuarios(){
     const [dados,setDados] = useState([]);
     useEffect(()=>{
         mostrarlista();
-    },[dados])
+    },[])
     function Editar(i){
         window.location.href=`/editarusuario/${i}`
     }
     function mostrarlista(){
-        let cadastros = JSON.parse(localStorage.getItem("cd-usuarios")||"[]")
-        setDados(cadastros)
+        // let cadastros = JSON.parse(localStorage.getItem("cd-usuarios")||"[]")
+        // setDados(cadastros)
+        // fetch('http://localhost:5000/usuario')
+        //     .then((response) => response.json())
+        //     .then((data) => setDados(data.usuario))
+        //     .then((data) => console.log(data));
+        api.get('/usuario')
+        .then(res => {
+            if(res.status==200){
+                setDados(res.data.usuario);
+                console.log("status "+res.status);
+                console.log(res.data.usuario); 
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        });
         
+           
+
     }
     function excluir(i,nome){
         confirmAlert ( { 
@@ -30,10 +47,14 @@ export default function Listausuarios(){
               { 
                 label : 'Sim' , 
                 onClick : ( )  => {
-                    let dadosnovos = []
-                    dadosnovos=dados.filter(item => item.id!==i)
-                    setDados(dadosnovos)
-                    localStorage.setItem('cd-usuarios',JSON.stringify(dadosnovos))
+                    // let dadosnovos = []
+                    // dadosnovos=dados.filter(item => item.id!==i)
+                    // setDados(dadosnovos)
+                    // localStorage.setItem('cd-usuarios',JSON.stringify(dadosnovos))
+                    api.delete(`/usuario/${i}`)
+                    .then(res=>{});
+                    alert("dados deletados com sucesso");
+                    mostrarlista();
                 }
               } , 
               { 
@@ -72,12 +93,12 @@ export default function Listausuarios(){
                         {
                         dados.map(usu=>{
                         return(
-                            <tr key={usu.id}>
-                                <td>{usu.id}</td>
+                            <tr key={usu.codusu}>
+                                <td>{usu.codusu}</td>
                                 <td>{usu.nome}</td>
                                 <td>{usu.email}</td>
-                                <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.id)}/></td>
-                                <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.id,usu.nomeusuario)}
+                                <td><FiEdit color="blue" size={18} cursor="pointer" onClick={(e)=>Editar(usu.codusu)}/></td>
+                                <td><FiDelete color="red" size={18} onClick={(e)=>excluir(usu.codusu,usu.nome)}
                                 cursor="pointer" 
                                 /></td>
                             </tr>

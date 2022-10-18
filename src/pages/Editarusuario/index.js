@@ -8,30 +8,55 @@ import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useParams } from "react-router-dom";
+import api from "../../server/api";
 
 
 export default function EditarUsuario() {
-    const {id}= useParams()
+    const {id}= useParams();
     const [nome, setNome] = useState('')
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
     const [Confsenha, setConfSenha] = useState('')
     const [msg, setMsg] = useState('')
     const [valida, setValida] = useState(true)
-    
+    const dados = {
+        id,
+        nome,
+        email,
+        senha    
+    }
     useEffect(()=>{
         mostrardados();
     },[])
     function mostrardados(){
-        let listaUser = JSON.parse(localStorage.getItem("cd-usuarios"))
-         listaUser.
-            filter(value => value.id == id).
-            map(value => {
-                setNome(value.nome)
-                setEmail(value.email)
-                setSenha(value.senha)
-                setConfSenha(value.senha)
-            })
+        // let listaUser = JSON.parse(localStorage.getItem("cd-usuarios"))
+        //  listaUser.
+        //     filter(value => value.id == id).
+        //     map(value => {
+        //         setNome(value.nome)
+        //         setEmail(value.email)
+        //         setSenha(value.senha)
+        //         setConfSenha(value.senha)
+        //     })
+        api.get(`/usuario/${id}`)
+        .then(res => {
+            if(res.status==200){
+                let resultado=res.data.usuario;
+                // setDados(res.data.usuario);
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
+                setNome(resultado[0].nome);
+                setEmail(resultado[0].email);
+                setSenha(resultado[0].senha);
+                setConfSenha(resultado[0].senha);
+        }else{
+            console.log("houve um erro na requisição")
+        }
+           
+        })
+        .catch(function (error){
+            console.log(error);
+        });
     }
     function validasenha() {
         if (senha !== "") {
@@ -47,8 +72,8 @@ export default function EditarUsuario() {
             setMsg("Campo senha está vazio")
         }
     }
-    function salvardados() {
-        //e.preventDefault();
+    function salvardados(e) {
+        e.preventDefault();
         validasenha()
         if (valida === false) {
             setMsg("Senhas não conferem")
@@ -62,17 +87,25 @@ export default function EditarUsuario() {
                 index++
             }
             if (index === 0) {
-                let listaUser = JSON.parse(localStorage.getItem("cd-usuarios"))
-                listaUser.map((item)=>{
-                    if(item.id==id){
-                        item.nome=nome;
-                        item.email=email;
-                        item.senha=senha;
-                    }
-                })
-                localStorage.setItem("cd-usuarios",JSON.stringify(listaUser))
-                window.location.href="/listausuarios";
-                alert("Dados salvos com sucesso");
+                api.patch("usuario",
+                    dados,
+                    {headers:{'Content-Type':'application/json'}}    
+                ).then(function (response){
+                    alert("Cadastro salvo com sucesso!!!");
+                    window.location.href="/listausuarios"
+                });
+                // let listaUser = JSON.parse(localStorage.getItem("cd-usuarios"))
+                // listaUser.map((item)=>{
+                //     if(item.id==id){
+                //         item.nome=nome;
+                //         item.email=email;
+                //         item.senha=senha;
+                //     }
+                // })
+                // localStorage.setItem("cd-usuarios",JSON.stringify(listaUser))
+                // window.location.href="/listausuarios";
+                // alert("Dados salvos com sucesso");
+                
             }
         }
     }
@@ -88,7 +121,7 @@ export default function EditarUsuario() {
                 <section className="form">
                     <form onSubmit={salvardados} className="form-cadastro">
                         {/* <h1>Cadastrar-se</h1> */}
-                        <p>{id}</p>
+                        <p>ID {id}</p>
                         <label className="label">Nome</label>
 
                         <input placeholder="Nome"

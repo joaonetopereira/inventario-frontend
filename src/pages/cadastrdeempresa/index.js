@@ -8,6 +8,7 @@ import { FiEdit, FiTrash, FiDelete, FiFilePlus } from "react-icons/fi";
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
 import { useParams } from "react-router-dom";
+import api from "../../server/api";
 
 
 export default function Cadastrodeempresa() {
@@ -17,11 +18,11 @@ export default function Cadastrodeempresa() {
     const [msg, setMsg] = useState('')
     const [valida, setValida] = useState(true)
     
-    let dados = [
-        {
-            
-        }
-    ]
+    const dados = {
+        nome,
+        responsavel,
+        contato
+    }
     function salvardados(e) {
         e.preventDefault();
         if (valida === false) {
@@ -36,21 +37,28 @@ export default function Cadastrodeempresa() {
                 index++
             }
             if (index === 0) { 
-                let listaUser = JSON.parse(localStorage.getItem("cd-empresas")||"[]") 
+                api.post("empresas",
+                    dados,
+                    {headers:{'Content-Type':'application/json'}}    
+                ).then(function (response){
+                    alert("Cadastro salvo com sucesso!!!");
+                    window.location.href="/listaempresa"
+                });
+                // let listaUser = JSON.parse(localStorage.getItem("cd-empresas")||"[]") 
 
-                listaUser.push(
-                    {
-                        id: Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
-                        nome: nome,
-                        responsavel: responsavel,
-                        contato: contato
-                        //email: email,
-                        // senha: senha
-                    }
-                )
-                localStorage.setItem("cd-empresas",JSON.stringify(listaUser));
-                alert("Cadastro salvo com sucesso!!!!");
-                Window.location.href="/listaempresas";
+                // listaUser.push(
+                //     {
+                //         id: Date.now().toString(36)+Math.floor(Math.pow(10,12)+Math.random()*9*Math.pow(10,12)).toString(36),
+                //         nome: nome,
+                //         responsavel: responsavel,
+                //         contato: contato
+                //         //email: email,
+                //         // senha: senha
+                //     }
+                // )
+                // localStorage.setItem("cd-empresas",JSON.stringify(listaUser));
+                // alert("Cadastro salvo com sucesso!!!!");
+                // Window.location.href="/listaempresas";
             }
         }
     }
