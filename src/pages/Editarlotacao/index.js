@@ -16,7 +16,7 @@ export default function EditarUsuario() {
     const [idpatrimonio, setIdpatrimonio] = useState('')
     const [idempresa, setIdempresa] = useState('')
     const [idsetor, setIdsetor] = useState('')
-    const [datamovimentacao, setDatamovimentacao] = useState('')
+    // const [datamovimentacao, setDatamovimentacao] = useState('')
 
     const [usuario, setUsuario] = useState([])
     const [patrimonio, setPatrimonio] = useState([])
@@ -31,7 +31,7 @@ export default function EditarUsuario() {
         idpatrimonio,
         idempresa,
         idsetor,
-        datamovimentacao      
+        datalotacao      
     }
     useEffect(()=>{
         mostrardados();
@@ -50,8 +50,8 @@ export default function EditarUsuario() {
         .then(res => {
             if(res.status==200){
                 setUsuario(res.data.usuario);
-                console.log("status "+res.status);
-                console.log(res.data.usuario); 
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
         }else{
             console.log("houve um erro na requisição")
         }});
@@ -59,8 +59,8 @@ export default function EditarUsuario() {
         .then(res => {
             if(res.status==200){
                 setEmpresa(res.data.empresas);
-                console.log("status "+res.status);
-                console.log(res.data.empresas); 
+                // console.log("status "+res.status);
+                // console.log(res.data.empresas); 
         }else{
             console.log("houve um erro na requisição")
         }});
@@ -68,8 +68,8 @@ export default function EditarUsuario() {
         .then(res => {
             if(res.status==200){
                 setPatrimonio(res.data.patrimonio);
-                console.log("status "+res.status);
-                console.log(res.data.patrimonio); 
+                // console.log("status "+res.status);
+                // console.log(res.data.patrimonio); 
         }else{
             console.log("houve um erro na requisição")
         }});
@@ -77,13 +77,13 @@ export default function EditarUsuario() {
         .then(res => {
             if(res.status==200){
                 setSetor(res.data.setor);
-                console.log("status "+res.status);
-                console.log(res.data.setor); 
+                // console.log("status "+res.status);
+                // console.log(res.data.setor); 
         }else{
             console.log("houve um erro na requisição")
         }});
 
-        api.get(`/lotacao/${id}`)
+        api.get(`/lotacao/editar/${id}`)
         .then(res => {
             if(res.status==200||res.status==304){
                 let resultado=res.data.lotacao;
@@ -92,7 +92,8 @@ export default function EditarUsuario() {
                 setIdpatrimonio(resultado[0].idpatrimonio);
                 setIdsetor(resultado[0].idSetor);
                 setDatalotacao(resultado[0].datalotacao);
-                console.log(resultado)
+                console.log(resultado);
+                
         }else{
             console.log("houve um erro na requisição")
         }
@@ -133,7 +134,7 @@ export default function EditarUsuario() {
             // }
             if (index === 0) {
                 console.log(dados)
-                    api.post("lotacao",
+                    api.patch("lotacao",
                             dados,
                             {headers:{'Content-Type':'application/json'}}    
                         ).then(function (response){
@@ -155,11 +156,11 @@ export default function EditarUsuario() {
                     <form onSubmit={salvardados} className="form-cadastro">
                         {/* <h1>Cadastrar-se</h1> */}
                         <label className="label">Usuarios </label>
-                        <select defaultValue={idusuario} onChange={e => setIdusuario(e.target.value)}>
+                        <select value={idusuario} onChange={e => setIdusuario(e.target.value)}>
                             <option></option>
                             {usuario.map(usu => {
                                 return (
-                                    <option value={usu.id}>{usu.nome}</option>
+                                    <option value={usu.codusu}>{usu.nome}</option>
                                 )
                             }
                             )
@@ -170,7 +171,7 @@ export default function EditarUsuario() {
                         <option></option>
                             {patrimonio.map(pat => {
                                 return (
-                                    <option value={pat.id}>{pat.nome}</option>
+                                    <option value={pat.codpat}>{pat.nome}</option>
                                 )
                             }
                             )
@@ -181,7 +182,7 @@ export default function EditarUsuario() {
                         <option></option>
                             {setor.map(set => {
                                 return (
-                                    <option value={set.id}>{set.nome}</option>
+                                    <option value={set.codset}>{set.nome}</option>
                                 )
                             }
                             )
@@ -193,7 +194,7 @@ export default function EditarUsuario() {
                         <option></option>
                             {empresa.map(emp => {
                                 return (
-                                    <option value={emp.id}>{emp.nome}</option>
+                                    <option value={emp.codemp}>{emp.nome}</option>
                                 )
                             }
                             )

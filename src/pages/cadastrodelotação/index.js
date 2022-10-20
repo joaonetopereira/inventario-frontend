@@ -59,8 +59,8 @@ export default function CadastrodeUsuario() {
         .then(res => {
             if(res.status==200){
                 setUsuario(res.data.usuario);
-                console.log("status "+res.status);
-                console.log(res.data.usuario); 
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
         }else{
             console.log("houve um erro na requisição")
         }});
@@ -68,8 +68,8 @@ export default function CadastrodeUsuario() {
         .then(res => {
             if(res.status==200){
                 setEmpresa(res.data.empresas);
-                console.log("status "+res.status);
-                console.log(res.data.usuario); 
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
         }else{
             console.log("houve um erro na requisição")
         }});
@@ -77,8 +77,8 @@ export default function CadastrodeUsuario() {
         .then(res => {
             if(res.status==200){
                 setPatrimonio(res.data.patrimonio);
-                console.log("status "+res.status);
-                console.log(res.data.usuario); 
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
         }else{
             console.log("houve um erro na requisição")
         }});
@@ -86,8 +86,8 @@ export default function CadastrodeUsuario() {
         .then(res => {
             if(res.status==200){
                 setSetor(res.data.setor);
-                console.log("status "+res.status);
-                console.log(res.data.usuario); 
+                // console.log("status "+res.status);
+                // console.log(res.data.usuario); 
         }else{
             console.log("houve um erro na requisição")
         }});
