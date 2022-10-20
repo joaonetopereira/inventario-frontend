@@ -33,6 +33,16 @@ export default function EditarUsuario() {
         idsetor,
         datalotacao      
     }
+    function dataFormatada(d){
+        var data = new Date(d),
+            dia = data.getDate().toString(),
+            diaF = (dia.length==1) ? '0' + dia : dia,
+            mes = (data.getMonth()+1).toString(),
+            mesF = (mes.length == 1) ? '0'+mes : mes,
+            anoF = data.getFullYear();
+            return anoF+"-"+mesF+"-"+diaF;
+
+    }
     useEffect(()=>{
         mostrardados();
     },[])
@@ -201,7 +211,7 @@ export default function EditarUsuario() {
                             }
                         </select>
                         <label className="label">Data</label>
-                        <input type={"date"} onChange={e=>setDatalotacao(e.target.value)}></input>
+                        <input type={"date"} value={dataFormatada(datalotacao)} onChange={e=>setDatalotacao(e.target.value)}></input>
                         <p>{msg}</p>
                         <button className="button_save" type="submit">
                             Cadastrar-se
